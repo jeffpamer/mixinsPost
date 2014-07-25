@@ -3,18 +3,18 @@
 A common problem you will face when developing Backbone applications is deciding
 where to put shared logic. At first blush, inheritance (via `extend`) can solve
 most of your problems. When you have a group of similar classes, simply make a
-common ancenstor and have them all inherit it. What happens when you have a
+common ancenstor and have them all inherit it. But what happens when you have a
 group of *unrelated* classes that need a similar feature? This is where the
 [Mixin pattern](http://en.wikipedia.org/wiki/Mixin) becomes incredibly useful.
 
-For the use of this article, we will be making a simple mixin that pops up an
+For the use of this article, we will be making a simple mixin that shows a pop-up
 alert message with some text when a method is called.
 
 ## First Attempt
 
 Our first foray into mixing in functionality to our views will be quite simple.
-First we will create an object to house our grouped functions, and then we will
-attach it to our Backbone view.
+First, we will create an object to house our grouped functions, and then we will
+attach it to our Backbone view:
 
 ```javascript
 var alertMixin = {
@@ -25,17 +25,17 @@ var alertMixin = {
 ```
 
 As you can see, the implementation of the mixin itself is very simple. It is
-just a wrapper object housing our `_alert` method. Now let's create a Backbone
-view.
+just a wrapper object housing our `_alert` method. Now, let's create a Backbone
+view:
 
 ```javascript
 var ViewOne = Backbone.View.extend({});
 _.extend(ViewOne.prototype, alertMixin);
 ```
 
-Our view is just an empty class, the interesting part is when the `_.extend`.
-Here we are adding all the properties of `alerts` onto the prototype of our
-class. Now whenever we make a new instance of `ViewOne` we will have access to
+Our view is just an empty class, but the interesting part is the `_.extend`.
+Here, we are adding all the properties of `alerts` onto the prototype of our
+class. Now, whenever we make a new instance of `ViewOne` we will have access to
 `_alert`.
 
 ```javascript
@@ -44,7 +44,7 @@ view._alert('Hello World');
 // Alert pops up with 'Hello World'
 ```
 
-Right out the gate, this is very powerful, we can keep adding onto the prototype
+Right out the gate, this is very powerful, as we can keep adding onto the prototype
 of `ViewOne` by adding more mixins to the extend.
 
 ```javascript
@@ -53,14 +53,14 @@ _.extend(ViewOne.prototype, MixinOne, MixinTwo /* ,  ... */);
 
 ## Second Attempt
 
-One issue (depending on how you look at it) with the above method is the mixins
-are destructive. If your two of your mixins implement the same method, the last
-one wins no matter what. We want to give the flexability to the mixin to decide
-if it will over write any methods that exist already, or extend them.
+One issue (depending on how you look at it) with the above method is that the mixins
+are destructive. If two of your mixins implement the same method, the last
+one wins, no matter what. We want to give the flexibility to the mixin to decide
+if it will overwrite any methods that exist already, or extend them.
 
-To to this we will allow our mixins to be either objects or functions. The
+To do this, we will allow our mixins to be either objects or functions. The
 objects will behave just as before, not taking any consideration into account
-when extending the base view. The function mixin will get passed the view it is
+when extending the base view. The function mixin will get past the view it is
 getting mixed into to perform conditional logic.
 
 ```javascript
@@ -79,12 +79,12 @@ var Mixin = function(view /*, mixins... */) {
 };
 ```
 
-So what is happening here? We have a function that takes a view as its first
+Let's take a look at what's happening here. We have a function that takes a view as its first
 parameter and any number of things after it. The first line of the function
-grabs the [tail](http://underscorejs.org/#rest) of the arguments array which we
+grabs the [tail](http://underscorejs.org/#rest) of the arguments array, which we
 then iterate over. For each of these mixins we execute it (if it is a function)
-or simply save its value. Finally we extend our view with the restult of the
-mixin. So how would we use this method?
+or simply save its value. Finally, we extend our view with the restult of the
+mixin. So, how would we use this method?
 
 ```javascript
 var alertsOne = {
@@ -106,19 +106,19 @@ var alertsTwo = function(view) {
 Mixin(ViewOne, alertsOne, alertsTwo);
 ```
 
-Now we can have our mixins be either functions or objects. In this case, the
+Now our mixins can be either functions or objects. In this case, the
 function is actually checking to see if the `_alert` method exists on the views
-prototype beforehand. If it does exist we make a new method which is simply the
-composition of the old method with the new method. Now when `_alert` is called,
-first `oldAlert` executes and then the new `_alert` executes. In this fashion
+prototype beforehand. If it does exist, we make a new method that is simply the
+composition of the old method with the new method. Now, when `_alert` is called,
+first `oldAlert` executes and then the new `_alert` executes. In this fashion,
 the mixins are responsible for perserving methods (or not) if they desire.
 
 ## Third Attempt
 
-Now, lets extend this concept a bit further. What if we wanted our alert mixin
+Now, let's extend this concept a bit further. What if we wanted our alert mixin
 to automatically pop up the alert one second after the view is initialized? With
-our current pattern, we would need to bake that timmer aspect into the
-individual view as follows.
+our current pattern, we would need to bake that timer aspect into the
+individual view as follows:
 
 ```javascript
 var ViewOne = Backbone.View.extend({
@@ -140,14 +140,13 @@ Mixin(ViewOne, alertMixin);
 ```
 
 The issue here is we have now increased the coupling of our view to the `alert`
-mixin. In our third attempt we will decresee the coupling of logic as well as
-increse the coheasion of our mixin.
+mixin. In our third attempt, we will decrease the coupling of logic as well as
+increase the cohesion of our mixin.
 
-Another thing you may notice is the timing of when our second attempt gets
-executed. The `Mixin` Method gets called when the scripts are first paresd and
-executed by the broweser. We would have substantially more flexability if we
-could defer this until the individual classes get initialized. To do this we are
-going to add a little bit of sugar to the base `Backbone.View` class.
+Another thing you may notice is the timing of the execution of our second attempt. The `Mixin` Method is called when the scripts are first parsed and
+executed by the broweser. We would have substantially more flexibility if we
+could defer this until the individual classes get initialized. To do this, we are
+going to add a little bit of sugar to the base `Backbone.View` class:
 
 ```javascript
 var OriginalBackboneView = Backbone.View;
@@ -170,10 +169,10 @@ _.extend(Backbone.View.prototype, OriginalBackboneView.prototype);
 Backbone.View.extend = OriginalBackboneViewExtend;
 ```
 
-Here we are actually over-writing the original `Backbone.View` object with a new
-class. We still call the original constructor, however we add in the check for a
-`mixins` property on the view object. We then call our `Mixin` method, however
-it will need some slight modifications.
+Here, we are actually overwriting the original `Backbone.View` object with a new
+class. We still call the original constructor; however we add in the check for a
+`mixins` property on the view object. We then call our `Mixin` method, but
+it will need some slight modifications:
 
 ```javascript
 var Mixin = function() {
@@ -197,14 +196,13 @@ var Mixin = function() {
 };
 ```
 
-Here we have some subtle yet very important differences. First, we no longer
+Here, we have some subtle yet very important differences. First, we no longer
 pass in the view class as a paramater. Instead we are passing the *instance* of
 the view as the scope. What does this mean? It means our mixin function is now
-the equivilant of a `Backbone.View`'s `initialize` method.
+the equivalent of a `Backbone.View`'s `initialize` method.
 
-Secondly, we no longer pass in the mixins as a paramter to the `Mixin` method.
-Instead, we look for a `mixin` property on the view object. With all this said
-and done, how can we actually use this?
+Second, we no longer pass in the mixins as a paramter to the `Mixin` method--instead, we look for a `mixin` property on the view object. With all this said
+and done, though, how can we actually use this?
 
 ```javascript
 var alertMixin = function(options) {
@@ -227,16 +225,16 @@ var ViewOne = Backbone.View.extend({
 });
 ```
 
-This pattern gives you an incredible ammount of flexibility. Lets say you want
-to pass options to your mixins. You can either make the mixin a high order
+This pattern gives you an incredible ammount of flexibility. For example, let's say you want
+to pass options to your mixins. You can either make the mixin a high-order
 function that accepts options and returns a mixin, or you could simply attach
 options to your view and reference them from within the mixin.
 
 ## Moving Forward
 
-At Willowtree, mixins have played very nicely with creating cohesive code. We
+At WillowTree, mixins have played very nicely with creating cohesive code. We
 have several exciting mixins that we will be sharing over the coming weeks that
-you can start using activly in your Backbone own projects.
+you can start using actively in your own Backbone projects.
 
 ## Demo
 
