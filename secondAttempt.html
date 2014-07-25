@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+
+<!-- Libs -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
+
+<!-- Scripts -->
+<script>
+// =============================================================================
+// Our Mixin Pattern
+// =============================================================================
+var Mixin = function(view /*, mixins... */) {
+    var mixins = _.toArray(arguments).slice(1);
+
+    _.each(mixins, function(mixin){
+        // If the mixin is a function, execute it and save it's return value
+        var proto = _.isFunction(mixin) ? mixin(view) : mixin;
+
+        // Check to see if the result of the mixin is an object
+        if (proto && _.isObject(proto)) {
+            _.extend(view.prototype, proto);
+        }
+    });
+};
+
+
+// =============================================================================
+// Our Mixins
+// =============================================================================
+var alertsOne = {
+    _alert: function() {
+        alert('I am an object mixin!');
+    }
+};
+
+var alertsTwo = function(view) {
+    var _alert = function() {
+        alert('I am a function mixin!');
+    };
+
+    var oldAlert = view.prototype._alert;
+
+    view.prototype._alert = oldAlert ? _.compose(_alert, oldAlert) : _alert;
+};
+
+
+// =============================================================================
+// Our View
+// =============================================================================
+var ViewOne = Backbone.View.extend({});
+Mixin(ViewOne, alertsOne, alertsTwo);
+
+
+// =============================================================================
+// Execute stuff
+// =============================================================================
+var view = new ViewOne();
+view._alert('Hello World');
+// Alert pops up with 'Hello World'
+
+</script>
+
+<!-- DOM -->
+<div class="app-wrapper">
+    <h1>Second Attempt</h1>
+</div>

@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+
+<!-- Libs -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.4/handlebars.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
+
+<!-- Scripts -->
+<script>
+// =============================================================================
+// Patch Backbone
+// =============================================================================
+var Mixin = function() {
+    var args = arguments;
+
+    var mixins = (_.isFunction(this.mixins))
+                    ? this.mixins.apply(this)
+                    : this.mixins;
+
+    var self = this;
+
+    _.each(mixins, function(mixin){
+        // If the mixin is a function, execute it and save it's return value
+        var proto = _.isFunction(mixin) ? mixin.apply(self, args) : mixin;
+
+        // Check to see if the result of the mixin is an object
+        if (proto && _.isObject(proto)) {
+            _.extend(self, proto);
+        }
+    });
+};
+
+var OriginalBackboneView = Backbone.View;
+var OriginalBackboneViewExtend = Backbone.View.extend;
+
+Backbone.View = function(options) {
+    var args = arguments;
+    OriginalBackboneView.apply(this, args);
+
+    // Standardize views to always add these options to the prototype
+    options = options || {};
+    this.mixins = options.mixins || this.mixins || [];
+
+    Mixin.apply(this, arguments);
+
+    this.delegateEvents();
+};
+
+_.extend(Backbone.View.prototype, OriginalBackboneView.prototype);
+Backbone.View.extend = OriginalBackboneViewExtend;
+
+
+// =============================================================================
+// Execution
+// =============================================================================
+var alertMixin = function(options) {
+    setTimeout(function() {
+       this._alert('Hello World!');
+    }.bind(this), 1000);
+
+    return {
+        _alert: function(msg) {
+            alert(msg);
+        }
+    };
+};
+
+var ViewOne = Backbone.View.extend({
+    mixins: [alertMixin]
+});
+
+new ViewOne();
+</script>
+
+<!-- DOM -->
+<div class="app-wrapper">
+    <h1>Third Attempt</h1>
+</div>

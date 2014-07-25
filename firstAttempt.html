@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+
+<!-- Libs -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
+
+<!-- Scripts -->
+<script>
+
+var alertMixin = {
+    _alert: function(msg) {
+        alert(msg);
+    }
+};
+
+
+var ViewOne = Backbone.View.extend({});
+_.extend(ViewOne.prototype, alertMixin);
+
+var view = new ViewOne();
+view._alert('Hello World');
+// Alert pops up with 'Hello World'
+
+</script>
+
+<!-- DOM -->
+<div class="app-wrapper">
+    <h1>First Attempt</h1>
+</div>
