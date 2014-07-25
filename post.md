@@ -5,7 +5,7 @@ where to put shared logic. At first blush, inheritance (via `extend`) can solve
 most of your problems. When you have a group of similar classes, simply make a
 common ancenstor and have them all inherit it. What happens when you have a
 group of *unrelated* classes that need a similar feature? This is where the
-[Mixin pattern](http://en.wikipedia.org/wiki/Mixin) becomes increadibly usefull.
+[Mixin pattern](http://en.wikipedia.org/wiki/Mixin) becomes incredibly useful.
 
 For the use of this article, we will be making a simple mixin that pops up an
 alert message with some text when a method is called.
