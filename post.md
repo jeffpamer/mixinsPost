@@ -238,7 +238,7 @@ you can start using actively in your own Backbone projects.
 
 ## Demo
 
-To run this code locally, simply clone the gist on
-[GitHub](https://gist.github.com/kaw2k/8dca8655ed082d7c70da)
+To run this code locally, simply clone the repo on
+[GitHub](https://github.com/kaw2k/mixinsPost)
 
 
