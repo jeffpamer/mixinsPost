@@ -206,7 +206,6 @@ and done, though, how can we actually use this?
 
 ```javascript
 var alertMixin = function(options) {
-    console.log('mixin called');
 
     setTimeout(function() {
        this._alert('Hello World!');
